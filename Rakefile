@@ -10,3 +10,9 @@ require "rubocop/rake_task"
 RuboCop::RakeTask.new
 
 task default: %i[spec rubocop]
+
+require "rake/extensiontask"
+
+Rake::ExtensionTask.new("majo")
+
+CLEAN.add("{ext,lib}/**/*.{o,so,bundle}", "pkg")

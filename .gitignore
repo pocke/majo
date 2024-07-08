@@ -6,6 +6,8 @@
 /pkg/
 /spec/reports/
 /tmp/
+/Gemfile.lock
+/lib/*.bundle
 
 # rspec failure tracking
 .rspec_status
