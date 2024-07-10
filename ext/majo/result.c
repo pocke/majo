@@ -27,6 +27,7 @@ static VALUE result_alloc(VALUE klass) {
   majo_result *arg;
   VALUE obj = TypedData_Make_Struct(klass, majo_result, &result_type, arg);
   arg->object_table = st_init_numtable();
+  arg->str_table = st_init_strtable();
   arg->olds = NULL;
 
   return obj;
@@ -39,9 +40,7 @@ majo_new_result() {
 
 majo_result *
 majo_check_result(VALUE obj) {
-  majo_result *res;
-  TypedData_Get_Struct(obj, majo_result, &result_type, res);
-  return res;
+  return rb_check_typeddata(obj, &result_type);
 }
 
 void

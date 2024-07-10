@@ -3,6 +3,7 @@
 
 typedef struct {
   st_table *object_table; /* obj (VALUE) -> allocation_info */
+  st_table *str_table;    /* cstr -> refcount */
   rb_darray(majo_allocation_info) olds;
   VALUE newobj_trace;
   VALUE freeobj_trace;

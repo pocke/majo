@@ -11,6 +11,7 @@
 
 #include "allocation_info.h"
 #include "result.h"
+#include "unique_str.h"
 
 extern VALUE rb_mMajo;
 extern VALUE rb_cMajo_Result;

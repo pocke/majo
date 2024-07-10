@@ -2,13 +2,12 @@
 #define MAJO_ALLOCATION_INFO_H
 
 typedef struct {
-  VALUE klass;
+  const char *path;
+  const char *class_path;
+  const char *object_class_path;
+  unsigned long line;
+  VALUE mid;
 
-  /* allocation info */
-  // const char *path;
-  // unsigned long line;
-  // const char *class_path;
-  // VALUE mid;
   size_t generation;
 } majo_allocation_info;
 
