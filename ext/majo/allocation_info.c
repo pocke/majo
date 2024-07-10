@@ -91,6 +91,12 @@ allocation_info_generation(VALUE self) {
   return SIZET2NUM(info->generation);
 }
 
+static VALUE
+allocation_info_memsize(VALUE self) {
+  majo_allocation_info *info = majo_check_allocation_info(self);
+  return SIZET2NUM(info->memsize);
+}
+
 void
 majo_init_allocation_info() {
   rb_cMajo_AllocationInfo = rb_define_class_under(rb_mMajo, "AllocationInfo", rb_cObject);
@@ -102,4 +108,5 @@ majo_init_allocation_info() {
   rb_define_method(rb_cMajo_AllocationInfo, "line", allocation_info_line, 0);
   rb_define_method(rb_cMajo_AllocationInfo, "object_class_path", allocation_info_object_class_path, 0);
   rb_define_method(rb_cMajo_AllocationInfo, "generation", allocation_info_generation, 0);
+  rb_define_method(rb_cMajo_AllocationInfo, "memsize", allocation_info_memsize, 0);
 }

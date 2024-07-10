@@ -9,6 +9,7 @@ typedef struct {
   VALUE mid;
 
   size_t generation;
+  size_t memsize;
 } majo_allocation_info;
 
 VALUE

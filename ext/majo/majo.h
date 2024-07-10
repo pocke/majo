@@ -17,4 +17,8 @@ extern VALUE rb_mMajo;
 extern VALUE rb_cMajo_Result;
 extern VALUE rb_cMajo_AllocationInfo;
 
+// Exposing the internal functions
+size_t rb_obj_memsize_of(VALUE);
+VALUE rb_gc_disable_no_rest(void);
+
 #endif

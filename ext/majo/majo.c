@@ -43,6 +43,9 @@ newobj_i(VALUE tpval, void *data)
 static void
 freeobj_i(VALUE tpval, void *data)
 {
+  // Since freeobj_i is called during GC, it must not trigger another GC.
+  VALUE gc_disabled = rb_gc_disable_no_rest();
+
   majo_result *arg = (majo_result *)data;
   rb_trace_arg_t *tparg = rb_tracearg_from_tracepoint(tpval);
   st_data_t obj = (st_data_t)rb_tracearg_object(tparg);
@@ -53,10 +56,13 @@ freeobj_i(VALUE tpval, void *data)
     majo_allocation_info *info = (majo_allocation_info *)v;
     // Reject it for majo
     if (info->generation < rb_gc_count()-1) {
+      info->memsize = rb_obj_memsize_of((VALUE)obj);
       majo_result_append_info(arg, *info);
     }
     free(info);
   }
+
+  if (gc_disabled == Qfalse) rb_gc_enable();
 }
 
 static VALUE

@@ -3,6 +3,7 @@
 require_relative 'majo.so'
 require_relative "majo/version"
 require_relative 'majo/allocation_info'
+require_relative 'majo/result'
 
 module Majo
   class Error < StandardError; end
