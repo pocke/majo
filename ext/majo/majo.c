@@ -17,7 +17,6 @@ newobj_i(VALUE tpval, void *data)
   VALUE line = rb_tracearg_lineno(tparg);
   VALUE mid = rb_tracearg_method_id(tparg);
   VALUE klass = rb_tracearg_defined_class(tparg);
-  VALUE obj_class = rb_obj_class(obj);
 
   // TODO: when the st already has an entry for the value
   majo_allocation_info *info = (majo_allocation_info *)malloc(sizeof(majo_allocation_info));
@@ -27,15 +26,12 @@ newobj_i(VALUE tpval, void *data)
   VALUE class_path = (RTEST(klass) && !OBJ_FROZEN(klass)) ? rb_class_path_cached(klass) : Qnil;
   const char *class_path_cstr = RTEST(class_path) ? majo_make_unique_str(arg->str_table, RSTRING_PTR(class_path), RSTRING_LEN(class_path)) : 0;
 
-  VALUE obj_class_path = (RTEST(obj_class) && !OBJ_FROZEN(obj_class)) ? rb_class_path_cached(obj_class) : Qnil;
-  const char *obj_class_path_cstr = RTEST(obj_class_path) ? majo_make_unique_str(arg->str_table, RSTRING_PTR(obj_class_path), RSTRING_LEN(obj_class_path)) : 0;
 
   info->path = path_cstr;
   info->line = NUM2INT(line);
   info->mid = mid;
 
   info->class_path = class_path_cstr;
-  info->object_class_path = obj_class_path_cstr;
   info->generation = rb_gc_count();
   st_insert(arg->object_table, (st_data_t)obj, (st_data_t)info);
 }
@@ -57,6 +53,13 @@ freeobj_i(VALUE tpval, void *data)
     // Reject it for majo
     if (info->generation < rb_gc_count()-1) {
       info->memsize = rb_obj_memsize_of((VALUE)obj);
+
+      VALUE obj = rb_tracearg_object(tparg);
+      VALUE obj_class = rb_obj_class(obj);
+      VALUE obj_class_path = (RTEST(obj_class) && !OBJ_FROZEN(obj_class)) ? rb_class_path_cached(obj_class) : Qnil;
+      const char *obj_class_path_cstr = RTEST(obj_class_path) ? majo_make_unique_str(arg->str_table, RSTRING_PTR(obj_class_path), RSTRING_LEN(obj_class_path)) : 0;
+      info->object_class_path = obj_class_path_cstr;
+
       majo_result_append_info(arg, *info);
     }
     free(info);

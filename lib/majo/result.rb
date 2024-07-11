@@ -1,7 +1,7 @@
 module Majo
   class Result
     def report
-      <<~RESULT
+      puts <<~RESULT
         Total #{total_memory} bytes (#{total_objects} objects)
 
         Memory by file
@@ -36,45 +36,45 @@ module Majo
 
     def memory_by_file
       allocs.group_by(&:path).map do |path, allocations|
-        [allocations.sum(&:memsize).to_s, path]
-      end
+        [allocations.sum(&:memsize), path]
+      end.sort_by(&:first).reverse
     end
 
     def memory_by_location
       allocs.group_by { |a| "#{a.path}:#{a.line}" }.map do |location, allocations|
-        [allocations.sum(&:memsize).to_s, location]
-      end
+        [allocations.sum(&:memsize), location]
+      end.sort_by(&:first).reverse
     end
 
     def memory_by_class
       allocs.group_by(&:object_class_path).map do |class_path, allocations|
-        [allocations.sum(&:memsize).to_s, class_path]
-      end
+        [allocations.sum(&:memsize), class_path]
+      end.sort_by(&:first).reverse
     end
 
     def objects_by_file
       allocs.group_by(&:path).map do |path, allocations|
-        [allocations.size.to_s, path]
-      end
+        [allocations.size, path]
+      end.sort_by(&:first).reverse
     end
 
     def objects_by_location
       allocs.group_by { |a| "#{a.path}:#{a.line}" }.map do |location, allocations|
-        [allocations.size.to_s, location]
-      end
+        [allocations.size, location]
+      end.sort_by(&:first).reverse
     end
 
     def objects_by_class
       allocs.group_by(&:object_class_path).map do |class_path, allocations|
-        [allocations.size.to_s, class_path]
-      end
+        [allocations.size, class_path]
+      end.sort_by(&:first).reverse
     end
 
     def format_two_columns(data)
       return "" if data.empty?
 
-      max_length = data.max_by { |row| row[0].size }[0].size
-      data.map { |row| "#{row[0].ljust(max_length)} #{row[1]}" }.join("\n")
+      max_length = data.max_by { |row| row[0].to_s.size }[0].size
+      data.map { |row| "#{row[0].to_s.ljust(max_length)} #{row[1]}" }.join("\n")
     end
 
     def allocs
