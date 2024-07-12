@@ -72,7 +72,7 @@ newobj_i(VALUE tpval, void *data)
   info->object_class_path = obj_class_path_cstr;
 
   info->class_path = class_path_cstr;
-  info->generation = rb_gc_count();
+  info->alloc_generation = rb_gc_count();
   st_insert(arg->object_table, (st_data_t)obj, (st_data_t)info);
 }
 
@@ -87,9 +87,11 @@ freeobj_i(VALUE tpval, void *data)
   // TODO refcount of the strings
   if (st_delete(arg->object_table, &obj, &v)) {
     majo_allocation_info *info = (majo_allocation_info *)v;
+    size_t gc_count = rb_gc_count();
     // Reject it for majo
-    if (info->generation < rb_gc_count()-1) {
+    if (info->alloc_generation < gc_count-1) {
       info->memsize = rb_obj_memsize_of((VALUE)obj);
+      info->free_generation = gc_count;
 
       VALUE obj = rb_tracearg_object(tparg);
       if (!internal_object_p(obj)) {
