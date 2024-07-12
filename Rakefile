@@ -6,10 +6,19 @@ require "rubocop/rake_task"
 
 RuboCop::RakeTask.new
 
-task default: %i[rubocop]
+require 'rake/testtask'
+
+Rake::TestTask.new do |test|
+  test.libs << 'test'
+  test.test_files = Dir['test/**/*_test.rb']
+  test.verbose = true
+end
 
 require "rake/extensiontask"
 
 Rake::ExtensionTask.new("majo")
 
 CLEAN.add("{ext,lib}/**/*.{o,so,bundle}", "pkg")
+
+task test: :compile
+task default: %i[rubocop test]
