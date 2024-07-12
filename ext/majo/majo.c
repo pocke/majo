@@ -6,6 +6,36 @@ VALUE rb_cMajo_AllocationInfo;
 
 ID running_tracer_stack;
 
+static bool
+internal_object_p(VALUE obj)
+{
+  switch (TYPE(obj)) {
+    case T_OBJECT:
+    case T_CLASS:
+    case T_MODULE:
+    case T_FLOAT:
+    case T_STRING:
+    case T_REGEXP:
+    case T_ARRAY:
+    case T_HASH:
+    case T_STRUCT:
+    case T_BIGNUM:
+    case T_FILE:
+    case T_DATA:
+    case T_MATCH:
+    case T_COMPLEX:
+    case T_RATIONAL:
+    case T_NIL:
+    case T_TRUE:
+    case T_FALSE:
+    case T_SYMBOL:
+    case T_FIXNUM:
+      return false;
+    default:
+      return true;
+  }
+}
+
 static void
 newobj_i(VALUE tpval, void *data)
 {
@@ -55,12 +85,14 @@ freeobj_i(VALUE tpval, void *data)
       info->memsize = rb_obj_memsize_of((VALUE)obj);
 
       VALUE obj = rb_tracearg_object(tparg);
-      VALUE obj_class = rb_obj_class(obj);
-      VALUE obj_class_path = (RTEST(obj_class) && !OBJ_FROZEN(obj_class)) ? rb_class_path_cached(obj_class) : Qnil;
-      const char *obj_class_path_cstr = RTEST(obj_class_path) ? majo_make_unique_str(arg->str_table, RSTRING_PTR(obj_class_path), RSTRING_LEN(obj_class_path)) : 0;
-      info->object_class_path = obj_class_path_cstr;
+      if (!internal_object_p(obj)) {
+        VALUE obj_class = rb_obj_class(obj);
+        VALUE obj_class_path = (RTEST(obj_class) && !OBJ_FROZEN(obj_class)) ? rb_class_path_cached(obj_class) : Qnil;
+        const char *obj_class_path_cstr = RTEST(obj_class_path) ? majo_make_unique_str(arg->str_table, RSTRING_PTR(obj_class_path), RSTRING_LEN(obj_class_path)) : 0;
+        info->object_class_path = obj_class_path_cstr;
 
-      majo_result_append_info(arg, *info);
+        majo_result_append_info(arg, *info);
+      }
     }
     free(info);
   }
