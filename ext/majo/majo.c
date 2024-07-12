@@ -43,6 +43,11 @@ newobj_i(VALUE tpval, void *data)
 
   rb_trace_arg_t *tparg = rb_tracearg_from_tracepoint(tpval);
   VALUE obj = rb_tracearg_object(tparg);
+
+  if (internal_object_p(obj)) {
+    return;
+  }
+
   VALUE path = rb_tracearg_path(tparg);
   VALUE line = rb_tracearg_lineno(tparg);
   VALUE mid = rb_tracearg_method_id(tparg);
@@ -56,10 +61,15 @@ newobj_i(VALUE tpval, void *data)
   VALUE class_path = (RTEST(klass) && !OBJ_FROZEN(klass)) ? rb_class_path_cached(klass) : Qnil;
   const char *class_path_cstr = RTEST(class_path) ? majo_make_unique_str(arg->str_table, RSTRING_PTR(class_path), RSTRING_LEN(class_path)) : 0;
 
+  VALUE obj_class = rb_obj_class(obj);
+  VALUE obj_class_path = (RTEST(obj_class) && !OBJ_FROZEN(obj_class)) ? rb_class_path_cached(obj_class) : Qnil;
+  const char *obj_class_path_cstr = RTEST(obj_class_path) ? majo_make_unique_str(arg->str_table, RSTRING_PTR(obj_class_path), RSTRING_LEN(obj_class_path)) : 0;
+
 
   info->path = path_cstr;
   info->line = NUM2INT(line);
   info->mid = mid;
+  info->object_class_path = obj_class_path_cstr;
 
   info->class_path = class_path_cstr;
   info->generation = rb_gc_count();
@@ -69,9 +79,6 @@ newobj_i(VALUE tpval, void *data)
 static void
 freeobj_i(VALUE tpval, void *data)
 {
-  // Since freeobj_i is called during GC, it must not trigger another GC.
-  VALUE gc_disabled = rb_gc_disable_no_rest();
-
   majo_result *arg = (majo_result *)data;
   rb_trace_arg_t *tparg = rb_tracearg_from_tracepoint(tpval);
   st_data_t obj = (st_data_t)rb_tracearg_object(tparg);
@@ -86,18 +93,11 @@ freeobj_i(VALUE tpval, void *data)
 
       VALUE obj = rb_tracearg_object(tparg);
       if (!internal_object_p(obj)) {
-        VALUE obj_class = rb_obj_class(obj);
-        VALUE obj_class_path = (RTEST(obj_class) && !OBJ_FROZEN(obj_class)) ? rb_class_path_cached(obj_class) : Qnil;
-        const char *obj_class_path_cstr = RTEST(obj_class_path) ? majo_make_unique_str(arg->str_table, RSTRING_PTR(obj_class_path), RSTRING_LEN(obj_class_path)) : 0;
-        info->object_class_path = obj_class_path_cstr;
-
         majo_result_append_info(arg, *info);
       }
     }
     free(info);
   }
-
-  if (gc_disabled == Qfalse) rb_gc_enable();
 }
 
 static VALUE
