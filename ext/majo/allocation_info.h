@@ -8,7 +8,8 @@ typedef struct {
   unsigned long line;
   VALUE mid;
 
-  size_t generation;
+  size_t alloc_generation;
+  size_t free_generation;
   size_t memsize;
 } majo_allocation_info;
 
