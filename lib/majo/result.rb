@@ -1,7 +1,28 @@
 module Majo
   class Result
-    def report
-      puts <<~RESULT
+    def report(out: $stdout)
+      with_output(out) do |io|
+        io.puts body
+      end
+    end
+
+    private
+
+    def with_output(out)
+      case
+      when out.is_a?(IO)
+        yield out
+      when out.is_a?(String)
+        File.open(out, "w") { |io| yield io }
+      when out.respond_to?(:to_path)
+        File.open(out.to_path, "w") { |io| yield io }
+      else
+        raise ArgumentError, "out must be an IO or a String"
+      end
+    end
+
+    def body
+      <<~RESULT
         Total #{total_memory} bytes (#{total_objects} objects)
 
         Memory by file
@@ -23,8 +44,6 @@ module Majo
         #{format_two_columns(objects_by_class)}
       RESULT
     end
-
-    private
 
     def total_objects
       allocs.size
