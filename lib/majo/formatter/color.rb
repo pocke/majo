@@ -1,6 +1,8 @@
 module Majo
   module Formatter
     class Color
+      BAR = '-----------------------------------'
+
       def initialize(result)
         @result = result
       end
@@ -10,21 +12,27 @@ module Majo
           Total #{total_memory} bytes (#{total_objects} objects)
 
           Memory by file
+          #{BAR}
           #{format_two_columns(memory_by_file)}
 
           Memory by location
+          #{BAR}
           #{format_two_columns(memory_by_location)}
 
           Memory by class
+          #{BAR}
           #{format_two_columns(memory_by_class)}
 
           Objects by file
+          #{BAR}
           #{format_two_columns(objects_by_file)}
 
           Objects by location
+          #{BAR}
           #{format_two_columns(objects_by_location)}
 
           Objects by class
+          #{BAR}
           #{format_two_columns(objects_by_class)}
         RESULT
       end

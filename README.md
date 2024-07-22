@@ -62,36 +62,42 @@ The example is as follows:
 Total 15055372 bytes (159976 objects)
 
 Memory by file
+-----------------------------------
 10431760 /path/to/gems/rbs-3.5.1/lib/rbs/parser_aux.rb
 1966348  /path/to/gems/rbs-3.5.1/lib/rbs/environment_loader.rb
 980344   /path/to/gems/rbs-3.5.1/lib/rbs/types.rb
 (snip)
 
 Memory by location
+-----------------------------------
 10431760 /path/to/gems/rbs-3.5.1/lib/rbs/parser_aux.rb:20
 1942812  /path/to/gems/rbs-3.5.1/lib/rbs/environment_loader.rb:159
 249920   /path/to/gems/rbs-3.5.1/lib/rbs/types.rb:994
 (snip)
 
 Memory by class
+-----------------------------------
 4274028  String
 3556632  RBS::Location
 2197840  Array
 (snip)
 
 Objects by file
+-----------------------------------
 109126   /path/to/gems/rbs-3.5.1/lib/rbs/parser_aux.rb
 20813    /path/to/gems/rbs-3.5.1/lib/rbs/types.rb
 12236    /path/to/gems/rbs-3.5.1/lib/rbs/environment.rb
 (snip)
 
 Objects by location
+-----------------------------------
 109126   /path/to/gems/rbs-3.5.1/lib/rbs/parser_aux.rb:20
 4458     /path/to/gems/rbs-3.5.1/lib/rbs/namespace.rb:24
 4132     /path/to/gems/rbs-3.5.1/lib/rbs/types.rb:374
 (snip)
 
 Objects by class
+-----------------------------------
 52495    Array
 22435    RBS::Location
 11144    RBS::TypeName
