@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.version = Majo::VERSION
   spec.authors = ["Masataka Pocke Kuwabara"]
   spec.email = ["kuwabara@pocke.me"]
-  spec.licenses = ["MIT"]
+  spec.licenses = ["BSD-2-Clause"]
 
   spec.summary = ""
   spec.description = ""
