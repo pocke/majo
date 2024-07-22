@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.email = ["kuwabara@pocke.me"]
   spec.licenses = ["BSD-2-Clause"]
 
-  spec.summary = ""
-  spec.description = ""
+  spec.summary = "A memory profiler focusing on long-lived objects."
+  spec.description = "A memory profiler focusing on long-lived objects."
   spec.homepage = "https://github.com/pocke/majo"
   spec.required_ruby_version = ">= 3.1.0"
 
