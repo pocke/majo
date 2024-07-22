@@ -92,8 +92,8 @@ module Majo
       def format_two_columns(data)
         return "" if data.empty?
 
-        max_length = data.max_by { |row| row[0].to_s.size }[0].size
-        data.map { |row| "#{blue(row[0].to_s.ljust(max_length))} #{row[1]}" }.join("\n")
+        max_length = data.max_by { |row| row[0].to_s.size }[0].to_s.size
+        data.map { |row| "#{blue(row[0].to_s.rjust(max_length))} #{row[1]}" }.join("\n")
       end
 
       def allocs
