@@ -1,4 +1,4 @@
-# Majo
+# Majo🧙‍♀️
 
 A memory profiler focusing on long-lived objects.
 
