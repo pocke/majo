@@ -3,10 +3,18 @@ module Majo
     def report(out: $stdout, formatter: nil)
       fmt =
         case formatter
-        when nil, :color
+        when :color
           Formatter::Color
         when :csv
           Formatter::CSV
+        when :monochrome
+          Formatter::Monochrome
+        when nil
+          if out.respond_to?(:tty?) && out.tty?
+            Formatter::Color
+          else
+            Formatter::Monochrome
+          end
         else
           raise "unknown formatter: #{formatter.inspect}"
         end
