@@ -37,10 +37,10 @@ result.report
 
 You can pass the following options to `report` method.
 
-| Name        | Description              | Default   | Type                                                                     |
-| ----------- | ------------------------ | --------- | ------------------------------------------------------------------------ |
-| `out`       | Output file or IO        | `$stdout` | `IO`, `String` or an object having `to_path` method (such as `Pathname`) |
-| `formatter` | The format of the result | `:color`  | `:color`, or `:csv`                                                      |
+| Name        | Description              | Default                  | Type                                                                     |
+| ----------- | ------------------------ | ------------------------ | ------------------------------------------------------------------------ |
+| `out`       | Output file or IO        | `$stdout`                | `IO`, `String` or an object having `to_path` method (such as `Pathname`) |
+| `formatter` | The format of the result | `:color` or `monochrome` | `:color`, `:monochrome`, or `:csv`                                       |
 
 For example:
 
