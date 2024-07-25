@@ -39,7 +39,8 @@ internal_object_p(VALUE obj)
 static void
 newobj_i(VALUE tpval, void *data)
 {
-  majo_result *arg = (majo_result *)data;
+  VALUE res = (VALUE)data;
+  majo_result *arg = majo_check_result(res);
 
   rb_trace_arg_t *tparg = rb_tracearg_from_tracepoint(tpval);
   VALUE obj = rb_tracearg_object(tparg);
@@ -53,7 +54,6 @@ newobj_i(VALUE tpval, void *data)
   VALUE mid = rb_tracearg_method_id(tparg);
   VALUE klass = rb_tracearg_defined_class(tparg);
 
-  // TODO: when the st already has an entry for the value
   majo_allocation_info *info = (majo_allocation_info *)malloc(sizeof(majo_allocation_info));
 
   const char *path_cstr = RTEST(path) ? majo_make_unique_str(arg->str_table, RSTRING_PTR(path), RSTRING_LEN(path)) : 0;
@@ -66,6 +66,7 @@ newobj_i(VALUE tpval, void *data)
   const char *obj_class_path_cstr = RTEST(obj_class_path) ? majo_make_unique_str(arg->str_table, RSTRING_PTR(obj_class_path), RSTRING_LEN(obj_class_path)) : 0;
 
 
+  info->result = res;
   info->path = path_cstr;
   info->line = NUM2INT(line);
   info->mid = mid;
@@ -84,11 +85,9 @@ freeobj_i(VALUE tpval, void *data)
   st_data_t obj = (st_data_t)rb_tracearg_object(tparg);
   st_data_t v;
 
-  // TODO refcount of the strings
   if (st_delete(arg->object_table, &obj, &v)) {
     majo_allocation_info *info = (majo_allocation_info *)v;
     size_t gc_count = rb_gc_count();
-    // Reject it for majo
     if (info->alloc_generation < gc_count-1) {
       info->memsize = rb_obj_memsize_of((VALUE)obj);
       info->free_generation = gc_count;
@@ -110,7 +109,7 @@ start(VALUE self) {
   VALUE stack = rb_ivar_get(rb_mMajo, running_tracer_stack);
   rb_ary_push(stack, res);
 
-  arg->newobj_trace = rb_tracepoint_new(0, RUBY_INTERNAL_EVENT_NEWOBJ, newobj_i, arg);
+  arg->newobj_trace = rb_tracepoint_new(0, RUBY_INTERNAL_EVENT_NEWOBJ, newobj_i, (void *)res);
   arg->freeobj_trace = rb_tracepoint_new(0, RUBY_INTERNAL_EVENT_FREEOBJ, freeobj_i, arg);
 
   rb_tracepoint_enable(arg->newobj_trace);

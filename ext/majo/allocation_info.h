@@ -11,6 +11,8 @@ typedef struct {
   size_t alloc_generation;
   size_t free_generation;
   size_t memsize;
+
+  VALUE result;
 } majo_allocation_info;
 
 VALUE

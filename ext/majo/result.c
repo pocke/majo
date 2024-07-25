@@ -7,14 +7,35 @@ static void majo_result_mark(void *ptr)
   rb_gc_mark(arg->freeobj_trace);
 }
 
+static int
+free_st_key(st_data_t key, st_data_t value, st_data_t data)
+{
+    free((void *)key);
+    return ST_CONTINUE;
+}
+
+static int
+free_st_value(st_data_t key, st_data_t value, st_data_t data)
+{
+    free((void *)value);
+    return ST_CONTINUE;
+}
+
 static void majo_result_free(majo_result *arg) {
-  // TODO
-  ruby_xfree(arg);
+  st_foreach(arg->object_table, free_st_value, 0);
+  st_free_table(arg->object_table);
+
+  st_foreach(arg->str_table, free_st_key, 0);
+  st_free_table(arg->str_table);
+
+  rb_darray_free(arg->olds);
+
+  free(arg);
 }
 
 static size_t majo_result_memsize(const void *ptr) {
-  // TODO
-  return sizeof(majo_result);
+  majo_result *res = (majo_result*)ptr;
+  return sizeof(majo_result) + st_memsize(res->object_table) + st_memsize(res->str_table) + rb_darray_capa(res->olds) * sizeof(majo_allocation_info);
 }
 
 static rb_data_type_t result_type = {
