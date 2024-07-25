@@ -2,13 +2,12 @@
 
 static void majo_allocation_info_mark(void *ptr)
 {
-  // TODO
   majo_allocation_info *info = (majo_allocation_info*)ptr;
+  rb_gc_mark(info->result);
 }
 
 static void majo_allocation_info_free(majo_allocation_info *info) {
-  // TODO
-  ruby_xfree(info);
+  free(info);
 }
 
 static size_t majo_allocation_info_memsize(const void *ptr) {
