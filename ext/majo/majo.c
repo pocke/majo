@@ -88,7 +88,11 @@ freeobj_i(VALUE tpval, void *data)
   if (st_delete(arg->object_table, &obj, &v)) {
     majo_allocation_info *info = (majo_allocation_info *)v;
     size_t gc_count = rb_gc_count();
-    if (info->alloc_generation < gc_count-1) {
+    int lifetime = (int)(gc_count - info->alloc_generation - 1);
+    if (
+      (NIL_P(arg->upper_lifetime) || lifetime <= NUM2INT(arg->upper_lifetime)) &&
+      (NIL_P(arg->lower_lifetime) || NUM2INT(arg->lower_lifetime) <= lifetime)
+    ) {
       info->memsize = rb_obj_memsize_of((VALUE)obj);
       info->free_generation = gc_count;
 
@@ -102,9 +106,11 @@ freeobj_i(VALUE tpval, void *data)
 }
 
 static VALUE
-start(VALUE self) {
+start(VALUE self, VALUE upper_lifetime, VALUE lower_lifetime) {
   VALUE res = majo_new_result();
   majo_result *arg = majo_check_result(res);
+  arg->upper_lifetime = upper_lifetime;
+  arg->lower_lifetime = lower_lifetime;
 
   VALUE stack = rb_ivar_get(rb_mMajo, running_tracer_stack);
   rb_ary_push(stack, res);
@@ -136,7 +142,7 @@ Init_majo(void)
 {
   rb_mMajo = rb_define_module("Majo");
 
-  rb_define_module_function(rb_mMajo, "__start", start, 0);
+  rb_define_module_function(rb_mMajo, "__start", start, 2);
   rb_define_module_function(rb_mMajo, "__stop", stop, 0);
 
   running_tracer_stack = rb_intern("running_tracer_stack");

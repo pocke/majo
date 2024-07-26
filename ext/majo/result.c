@@ -6,6 +6,8 @@ static void majo_result_mark(void *ptr)
   rb_gc_mark(arg->newobj_trace);
   rb_gc_mark(arg->freeobj_trace);
   rb_gc_mark(arg->retained);
+  rb_gc_mark(arg->upper_lifetime);
+  rb_gc_mark(arg->lower_lifetime);
 }
 
 static int

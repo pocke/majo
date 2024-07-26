@@ -8,6 +8,9 @@ typedef struct {
   VALUE newobj_trace;
   VALUE freeobj_trace;
   VALUE retained;
+
+  VALUE upper_lifetime;
+  VALUE lower_lifetime;
 } majo_result;
 
 VALUE
