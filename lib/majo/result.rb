@@ -28,7 +28,7 @@ module Majo
 
     def with_output(out)
       case
-      when out.is_a?(IO)
+      when out.is_a?(IO) || (defined?(StringIO) && out.is_a?(StringIO))
         yield out
       when out.is_a?(String)
         File.open(out, "w") { |io| yield io }

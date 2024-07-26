@@ -11,3 +11,5 @@ gem "rake-compiler"
 gem "rubocop", require: false
 
 gem 'rbs', require: false
+
+gem 'csv', require: false
