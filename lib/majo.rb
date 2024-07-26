@@ -10,11 +10,11 @@ require_relative 'majo/formatter'
 module Majo
   class Error < StandardError; end
 
-  def self.start
+  def self.start(upper_lifetime: nil, lower_lifetime: 1)
     GC.start
     GC.start
     GC.start
-    __start
+    __start(upper_lifetime, lower_lifetime)
   end
 
   def self.stop
@@ -29,8 +29,8 @@ module Majo
     end
   end
 
-  def self.run
-    r = start
+  def self.run(upper_lifetime: nil, lower_lifetime: 1)
+    r = start(upper_lifetime:, lower_lifetime:)
     yield
     r
   ensure
