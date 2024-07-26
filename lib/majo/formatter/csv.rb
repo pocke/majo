@@ -17,7 +17,7 @@ module Majo
       end
 
       def groups
-        @result.allocations.tally
+        [*@result.allocations, *@result.retained].tally
       end
     end
   end

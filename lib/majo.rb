@@ -21,7 +21,12 @@ module Majo
     GC.start
     GC.start
     GC.start
-    __stop
+    res = __stop
+
+    # Collect retained objcects
+    ObjectSpace.each_object do |obj|
+      res.store_retained_object(obj)
+    end
   end
 
   def self.run
