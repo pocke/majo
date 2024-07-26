@@ -5,6 +5,7 @@ static void majo_result_mark(void *ptr)
   majo_result *arg = (majo_result*)ptr;
   rb_gc_mark(arg->newobj_trace);
   rb_gc_mark(arg->freeobj_trace);
+  rb_gc_mark(arg->retained);
 }
 
 static int
@@ -50,6 +51,7 @@ static VALUE result_alloc(VALUE klass) {
   arg->object_table = st_init_numtable();
   arg->str_table = st_init_strtable();
   arg->olds = NULL;
+  arg->retained = rb_ary_new();
 
   return obj;
 }
@@ -69,7 +71,7 @@ majo_result_append_info(majo_result *res, majo_allocation_info info) {
   rb_darray_append(&res->olds, info);
 }
 
-VALUE
+static VALUE
 majo_result_allocations(VALUE self) {
   majo_result *res = majo_check_result(self);
   VALUE ary = rb_ary_new_capa(rb_darray_size(res->olds));
@@ -83,10 +85,34 @@ majo_result_allocations(VALUE self) {
   return ary;
 }
 
+static VALUE
+majo_result_retained(VALUE self) {
+  majo_result *res = majo_check_result(self);
+  return res->retained;
+}
+
+static VALUE
+majo_result_store_retained_object(VALUE self, VALUE obj) {
+  majo_result *res = majo_check_result(self);
+
+  st_data_t value;
+  if (st_lookup(res->object_table, (st_data_t)obj, &value)) {
+    majo_allocation_info *info = (majo_allocation_info *)value;
+    info->memsize = rb_obj_memsize_of(obj);
+
+    VALUE info_r = majo_new_allocation_info(info);
+    rb_ary_push(res->retained, info_r);
+  }
+
+  return Qnil;
+}
+
 void
 majo_init_result() {
   rb_cMajo_Result = rb_define_class_under(rb_mMajo, "Result", rb_cObject);
   rb_define_alloc_func(rb_cMajo_Result, result_alloc);
 
   rb_define_method(rb_cMajo_Result, "allocations", majo_result_allocations, 0);
+  rb_define_method(rb_cMajo_Result, "retained", majo_result_retained, 0);
+  rb_define_method(rb_cMajo_Result, "store_retained_object", majo_result_store_retained_object, 1);
 }

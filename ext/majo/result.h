@@ -7,6 +7,7 @@ typedef struct {
   rb_darray(majo_allocation_info) olds;
   VALUE newobj_trace;
   VALUE freeobj_trace;
+  VALUE retained;
 } majo_result;
 
 VALUE

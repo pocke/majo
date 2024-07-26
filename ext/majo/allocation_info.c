@@ -93,6 +93,9 @@ allocation_info_alloc_generation(VALUE self) {
 static VALUE
 allocation_info_free_generation(VALUE self) {
   majo_allocation_info *info = majo_check_allocation_info(self);
+  if (info->free_generation == 0) {
+    return Qnil;
+  }
   return SIZET2NUM(info->free_generation);
 }
 
