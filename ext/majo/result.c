@@ -100,10 +100,13 @@ majo_result_store_retained_object(VALUE self, VALUE obj) {
   st_data_t value;
   if (st_lookup(res->object_table, (st_data_t)obj, &value)) {
     majo_allocation_info *info = (majo_allocation_info *)value;
-    info->memsize = rb_obj_memsize_of(obj);
+    int lifetime = (int)(rb_gc_count() - info->alloc_generation - 1);
+    if (NIL_P(res->upper_lifetime) || lifetime <= NUM2INT(res->upper_lifetime)) {
+      info->memsize = rb_obj_memsize_of(obj);
 
-    VALUE info_r = majo_new_allocation_info(info);
-    rb_ary_push(res->retained, info_r);
+      VALUE info_r = majo_new_allocation_info(info);
+      rb_ary_push(res->retained, info_r);
+    }
   }
 
   return Qnil;
