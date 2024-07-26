@@ -54,7 +54,7 @@ result.report(out: "majo-result.csv", formatter: :csv)
 
 ### Result Example
 
-The result contains only long-lived objects, which are collected by the major GC.
+The result contains only long-lived objects, which are collected by the major GC or retained.
 
 The example is as follows:
 
@@ -102,6 +102,44 @@ Objects by class
 22435  RBS::Location
 11144  RBS::TypeName
 (snip)
+
+Retained Memory by file
+-----------------------------------
+7040  /path/to/gems/3.3.0/gems/rbs-3.5.1/lib/rbs/parser_aux.rb
+ 256  /path/to/gems/3.3.0/gems/rbs-3.5.1/lib/rbs/resolver/type_name_resolver.rb
+(snip)
+
+Retained Memory by location
+-----------------------------------
+7040  /path/to/gems/3.3.0/gems/rbs-3.5.1/lib/rbs/parser_aux.rb:20
+ 256  /path/to/gems/3.3.0/gems/rbs-3.5.1/lib/rbs/resolver/type_name_resolver.rb:22
+(snip)
+
+Retained Memory by class
+-----------------------------------
+6920  String
+ 256  Hash
+ 120  Symbol
+(snip)
+
+Retained Objects by file
+-----------------------------------
+160  /path/to/gems/3.3.0/gems/rbs-3.5.1/lib/rbs/parser_aux.rb
+  1  /path/to/gems/3.3.0/gems/rbs-3.5.1/lib/rbs/resolver/type_name_resolver.rb
+(snip)
+
+Retained Objects by location
+-----------------------------------
+160  /path/to/gems/3.3.0/gems/rbs-3.5.1/lib/rbs/parser_aux.rb:20
+  1  /path/to/gems/3.3.0/gems/rbs-3.5.1/lib/rbs/resolver/type_name_resolver.rb:22
+(snip)
+
+Retained Objects by class
+-----------------------------------
+157  String
+  3  Symbol
+  1  Hash
+(snip)
 ```
 
 The CSV format is as follows:
@@ -118,17 +156,17 @@ You can find the raw data in the CSV format. It is useful for further analysis. 
 
 The columns are as follows:
 
-| Column name         | Description                                                        |
-| ------------------- | ------------------------------------------------------------------ |
-| `Object class path` | The class name of the allocated object                             |
-| `Class path`        | The class name of the receiver of the method allocating the object |
-| `Method ID`         | The method name allocating the object                              |
-| `Path`              | The file path of the method allocating the object                  |
-| `Line`              | The line number of the method allocating the object                |
-| `Alloc generation`  | The GC generation number when the object is allocated              |
-| `Free generation`   | The GC generation number when the object is freed                  |
-| `Memsize`           | The memory size of the object in bytes                             |
-| `Count`             | Number of objects allocated with the same conditions               |
+| Column name         | Description                                                                         |
+| ------------------- | ----------------------------------------------------------------------------------- |
+| `Object class path` | The class name of the allocated object                                              |
+| `Class path`        | The class name of the receiver of the method allocating the object                  |
+| `Method ID`         | The method name allocating the object                                               |
+| `Path`              | The file path of the method allocating the object                                   |
+| `Line`              | The line number of the method allocating the object                                 |
+| `Alloc generation`  | The GC generation number when the object is allocated                               |
+| `Free generation`   | The GC generation number when the object is freed. It's empty for retained objects. |
+| `Memsize`           | The memory size of the object in bytes                                              |
+| `Count`             | Number of objects allocated with the same conditions                                |
 
 ## Name
 
