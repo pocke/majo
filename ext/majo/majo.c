@@ -36,6 +36,18 @@ internal_object_p(VALUE obj)
   }
 }
 
+static const char*
+to_class_path(VALUE klass, st_table *str_table)
+{
+  if (FL_TEST(klass, FL_SINGLETON)) {
+    return to_class_path(majo_attached_object(klass), str_table);
+  }
+
+  VALUE class_path = (RTEST(klass) && !OBJ_FROZEN(klass)) ? rb_class_path_cached(klass) : Qnil;
+  const char *class_path_cstr = RTEST(class_path) ? majo_make_unique_str(str_table, RSTRING_PTR(class_path), RSTRING_LEN(class_path)) : 0;
+  return class_path_cstr;
+}
+
 static void
 newobj_i(VALUE tpval, void *data)
 {
@@ -57,19 +69,16 @@ newobj_i(VALUE tpval, void *data)
   majo_allocation_info *info = (majo_allocation_info *)malloc(sizeof(majo_allocation_info));
 
   const char *path_cstr = RTEST(path) ? majo_make_unique_str(arg->str_table, RSTRING_PTR(path), RSTRING_LEN(path)) : 0;
-
-  VALUE class_path = (RTEST(klass) && !OBJ_FROZEN(klass)) ? rb_class_path_cached(klass) : Qnil;
-  const char *class_path_cstr = RTEST(class_path) ? majo_make_unique_str(arg->str_table, RSTRING_PTR(class_path), RSTRING_LEN(class_path)) : 0;
+  const char *class_path_cstr = to_class_path(klass, arg->str_table);
 
   VALUE obj_class = rb_obj_class(obj);
-  VALUE obj_class_path = (RTEST(obj_class) && !OBJ_FROZEN(obj_class)) ? rb_class_path_cached(obj_class) : Qnil;
-  const char *obj_class_path_cstr = RTEST(obj_class_path) ? majo_make_unique_str(arg->str_table, RSTRING_PTR(obj_class_path), RSTRING_LEN(obj_class_path)) : 0;
-
+  const char *obj_class_path_cstr = to_class_path(obj_class, arg->str_table);
 
   info->result = res;
   info->path = path_cstr;
   info->line = NUM2INT(line);
   info->mid = mid;
+  info->singleton_p = FL_TEST(klass, FL_SINGLETON);
   info->object_class_path = obj_class_path_cstr;
 
   info->class_path = class_path_cstr;
@@ -150,4 +159,5 @@ Init_majo(void)
 
   majo_init_result();
   majo_init_allocation_info();
+  majo_init_attached_object();
 }

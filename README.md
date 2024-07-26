@@ -145,10 +145,10 @@ Retained Objects by class
 The CSV format is as follows:
 
 ```csv
-Object class path,Class path,Method ID,Path,Line,Alloc generation,Free generation,Memsize,Count
-Hash,,_parse_signature,/path/to/gems/rbs-3.5.1/lib/rbs/parser_aux.rb,20,20,22,160,3
-Hash,RBS::EnvironmentLoader,each_signature,/path/to/gems/rbs-3.5.1/lib/rbs/environment_loader.rb,159,20,22,160,1
-Hash,,_parse_signature,/path/to/gems/rbs-3.5.1/lib/rbs/parser_aux.rb,20,21,23,160,1
+Object class path,Class path,Method ID,Singleton method,Path,Line,Alloc generation,Free generation,Memsize,Count
+Hash,RBS::Parser,_parse_signature,true,/path/to/gems/rbs-3.5.1/lib/rbs/parser_aux.rb,20,20,22,160,3
+Hash,RBS::EnvironmentLoader,each_signature,false,/path/to/gems/rbs-3.5.1/lib/rbs/environment_loader.rb,159,20,22,160,1
+Hash,RBS::Parser,_parse_signature,true,/path/to/gems/rbs-3.5.1/lib/rbs/parser_aux.rb,20,21,23,160,1
 (snip)
 ```
 
@@ -161,6 +161,7 @@ The columns are as follows:
 | `Object class path` | The class name of the allocated object                                              |
 | `Class path`        | The class name of the receiver of the method allocating the object                  |
 | `Method ID`         | The method name allocating the object                                               |
+| `Singleton method`  | `true` if the method call is for a singleton method                                 |
 | `Path`              | The file path of the method allocating the object                                   |
 | `Line`              | The line number of the method allocating the object                                 |
 | `Alloc generation`  | The GC generation number when the object is allocated                               |
