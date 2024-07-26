@@ -7,6 +7,7 @@ typedef struct {
   const char *object_class_path;
   unsigned long line;
   VALUE mid;
+  bool singleton_p;
 
   size_t alloc_generation;
   size_t free_generation;

@@ -85,6 +85,12 @@ allocation_info_method_id(VALUE self) {
 }
 
 static VALUE
+allocation_info_singleton_p(VALUE self) {
+  majo_allocation_info *info = majo_check_allocation_info(self);
+  return info->singleton_p ? Qtrue : Qfalse;
+}
+
+static VALUE
 allocation_info_alloc_generation(VALUE self) {
   majo_allocation_info *info = majo_check_allocation_info(self);
   return SIZET2NUM(info->alloc_generation);
@@ -113,6 +119,7 @@ majo_init_allocation_info() {
   rb_define_method(rb_cMajo_AllocationInfo, "path", allocation_info_path, 0);
   rb_define_method(rb_cMajo_AllocationInfo, "class_path", allocation_info_class_path, 0);
   rb_define_method(rb_cMajo_AllocationInfo, "method_id", allocation_info_method_id, 0);
+  rb_define_method(rb_cMajo_AllocationInfo, "singleton?", allocation_info_singleton_p, 0);
   rb_define_method(rb_cMajo_AllocationInfo, "line", allocation_info_line, 0);
   rb_define_method(rb_cMajo_AllocationInfo, "object_class_path", allocation_info_object_class_path, 0);
   rb_define_method(rb_cMajo_AllocationInfo, "alloc_generation", allocation_info_alloc_generation, 0);
