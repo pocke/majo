@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.0.1 - 2024-08-05
+
+* Fix a bug that the free_generation is an undefined value in CSV for retained objects. [#39](https://github.com/pocke/majo/pull/39)
+
 ## v1.0.0 - 2024-07-26
 
 The first stable release of Majo!
