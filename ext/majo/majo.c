@@ -83,6 +83,7 @@ newobj_i(VALUE tpval, void *data)
 
   info->class_path = class_path_cstr;
   info->alloc_generation = rb_gc_count();
+  info->free_generation = 0;
   st_insert(arg->object_table, (st_data_t)obj, (st_data_t)info);
 }
 
