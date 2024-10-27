@@ -10,6 +10,10 @@ The existing memory profiler, `memory_profiler` gem, focuses on allocated and re
 
 This gem solves this problem by focusing on long-lived objects. Long-lived objects are objects that are not garbage collected for a long time. These objects are the main cause of the maximum memory usage.
 
+## NOTE: Performance
+
+This gem slows down the target program because it hooks all object allocations and `free`. Also, it uses a lot of memory to store the object information. Therefore, it is not suitable in a production environment.
+
 ## Installation
 
 Install the gem and add to the application's Gemfile by executing:
